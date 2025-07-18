@@ -1,0 +1,117 @@
+#!/bin/bash
+
+
+help(){
+    echo ""
+    echo "Uso: $0 [machine1 machine2]     Abre las maquinas remotas"
+    echo "Uso: $0 [opciones]"
+    echo ""
+    echo "Opciones:"
+    echo "  -h, --help                           Muestra esta ayuda"
+    echo "  -r, --regenerate                     Regenera las claves SSH"
+    echo "  -d, --delete-access [machine]        Borra la clave SSH del remoto"
+    echo "  -s, --show-remotes                   Devuelve las maquinas remotas"
+    echo ""
+}
+
+
+check_dependencies() {
+    local missing=()
+    local dependencies=("$@")  # lista de comandos a verificar
+
+    for cmd in "${dependencies[@]}"; do
+        if ! command -v "$cmd" &> /dev/null; then
+            missing+=("$cmd")
+        fi
+    done
+
+    if [[ ${#missing[@]} -ne 0 ]]; then
+        echo "Faltan las siguientes dependencias:"
+        for cmd in "${missing[@]}"; do
+            echo "  - $cmd"
+        done
+        echo "Instálalas y vuelve a ejecutar el script."
+        return 1
+    fi
+}
+
+
+showMachines() {
+    ./develop_getMachines
+}
+
+
+openMachines() {
+    source develop_getMachines > /dev/null
+    local machines_to_open=("$@")
+
+    for name in "${machines_to_open[@]}"; do
+        local ip_port="${REMOTE_MACHINES[$name]}"
+        
+        if [[ -z "$ip_port" ]]; then
+            echo "Máquina [$name] no encontrada"
+            continue
+        fi
+
+        local ip="${ip_port%%:*}"
+        local port="${ip_port##*:}"
+        setup_ssh_access $name
+        echo "Abriendo conexión a [$name] => [$ip:$port]"
+        echo ""
+
+        ./develop_openMachine $name &
+    done
+
+    wait
+}
+
+
+# Lista de herramientas necesarias
+required_tools=("ssh" "ssh-copy-id" "ssh-keygen" "expect" "vncviewer")
+
+# Llamar a la función
+check_dependencies "${required_tools[@]}" || exit 1
+
+source develop_keyManager   # Aqui hay diferentes funciones definidas
+
+TO_OPEN=()
+
+# Procesar argumentos
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -h|--help)
+            help
+            shift
+            ;;
+        -r|--regenerate)
+            create_ssh_keys
+            shift
+            ;;
+        -d|--delete-access)
+            if [[ $# -eq 2 ]]; then
+                #delete_ssh_key_from_remote $2
+                echo "Coming soon..."
+                shift 2
+            else
+                echo "Faltan argumentos."
+                help
+                shift
+            fi
+            ;;
+        -s|--show-remotes)
+            showMachines
+            shift
+            ;;
+        -*)
+            echo "Opción desconocida: $1"
+            help
+            shift
+            ;;
+        *)
+            TO_OPEN+=("$1")     # Falta implementar claves RSA
+            shift
+            ;;
+    esac
+done
+
+openMachines "${TO_OPEN[@]}"

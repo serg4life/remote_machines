@@ -1,0 +1,32 @@
+#!/bin/bash
+
+source params.conf
+
+source $USER_CONF_PATH
+source $MACHINES_CONF_PATH
+
+declare -A REMOTE_MACHINES
+
+while IFS='=' read -r name value || [[ -n "$name" ]]; do
+    # Quitar espacios alrededor (opcional pero útil)
+    name="${name//[[:space:]]/}"
+    value="${value//[[:space:]]/}"
+
+    # Saltar líneas vacías o comentarios
+    [[ -z "$name" || "$name" =~ ^# ]] && continue
+
+    # Validar que el valor tenga formato IP:PORT
+    if [[ "$value" == *:* ]]; then
+        REMOTE_MACHINES["$name"]="$value"
+    else
+        echo "Línea inválida en $MACHINES_CONF_PATH: '$name=$value' (formato incorrecto)"
+    fi
+done < $MACHINES_CONF_FILE
+
+# Acceder y visualizar las variables cargadas
+for name in "${!REMOTE_MACHINES[@]}"; do
+    ip_port="${REMOTE_MACHINES[$name]}"
+    ip="${ip_port%%:*}"
+    port="${ip_port##*:}"
+    echo "Máquina: [$name] -> IP: $ip, Puerto: $port"
+done
