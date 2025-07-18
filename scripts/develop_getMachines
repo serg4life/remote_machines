@@ -2,8 +2,8 @@
 
 source params.conf
 
-source $USER_CONF_PATH
-source $MACHINES_CONF_PATH
+source $USER_CONF_FILE
+source $MACHINES_CONF_FILE
 
 declare -A REMOTE_MACHINES
 

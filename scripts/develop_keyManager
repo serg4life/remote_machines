@@ -2,8 +2,8 @@
 
 source params.conf
 
-source $USER_CONF_PATH
-source $MACHINES_CONF_PATH
+source $USER_CONF_FILE
+source $MACHINES_CONF_FILE
 
 create_ssh_keys() {
     ssh-keygen -t rsa -b 4096 -f "$SSH_KEY_PATH" -N ""
@@ -63,6 +63,7 @@ EOF
             echo "Clave pública copiada correctamente a $name"
         else
             echo "No se pudo copiar la clave pública a $name. ¿Contraseña incorrecta o puerto/IP mal?"
+            return 1
         fi
     fi
 }

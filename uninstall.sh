@@ -1,6 +1,9 @@
 #!/bin/bash
 
 source params.conf
+HOME="/home/$SUDO_USER"
+
+source $USER_CONF_FILE
 
 confirm_uninstall() {
     read -p "¿Estás seguro de desinstalar $SOFTWARE_NAME? [Y/N] " resp
@@ -8,9 +11,10 @@ confirm_uninstall() {
 }
 
 INSTALL_PATHS=(
-    "$USER_CONF_PATH"
-    "$MACHINES_CONF_PATH"
+    "$CONFS_PATH"
     "$SCRIPTS_INSTALLATION_PATH"
+    "$SSH_KEY_PATH"
+    "$SSH_PUBKEY_PATH"
 )
 
 # Verificar root

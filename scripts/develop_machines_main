@@ -37,12 +37,12 @@ check_dependencies() {
 
 
 showMachines() {
-    ./develop_getMachines
+    $SCRIPT_DIR/develop_getMachines
 }
 
 
 openMachines() {
-    source develop_getMachines > /dev/null
+    source $SCRIPT_DIR/develop_getMachines > /dev/null
     local machines_to_open=("$@")
 
     for name in "${machines_to_open[@]}"; do
@@ -56,15 +56,21 @@ openMachines() {
         local ip="${ip_port%%:*}"
         local port="${ip_port##*:}"
         setup_ssh_access $name
+
+        if [[ $? -ne 0 ]]; then
+            return 1
+        fi
+
         echo "Abriendo conexión a [$name] => [$ip:$port]"
         echo ""
 
-        ./develop_openMachine $name &
+        $SCRIPT_DIR/develop_openMachine $name &
     done
 
     wait
 }
 
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
 # Lista de herramientas necesarias
 required_tools=("ssh" "ssh-copy-id" "ssh-keygen" "expect" "vncviewer")
@@ -72,7 +78,7 @@ required_tools=("ssh" "ssh-copy-id" "ssh-keygen" "expect" "vncviewer")
 # Llamar a la función
 check_dependencies "${required_tools[@]}" || exit 1
 
-source develop_keyManager   # Aqui hay diferentes funciones definidas
+source $SCRIPT_DIR/develop_keyManager   # Aqui hay diferentes funciones definidas
 
 TO_OPEN=()
 
