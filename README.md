@@ -32,9 +32,10 @@ User related information like the `USER` for remote access can be configured in 
 
 > [!IMPORTANT]
 > - Installations paths can be customized in `params.conf` file.
-> - Default VNC tool is RealVNC, this software use `.vnc` session files in order to make the remote connections,
->   this files should be located inside `sessions` folder for the software to work.
+> - Default VNC tool is RealVNC, this software use `.vnc` session files in order to make the remote connections.
+> - These files should be located inside `sessions` folder for the software to work,
 >   `.vnc` files of existing connections can be exported from RealVNC software.
+> - The name of each `name.vnc` file should match the name of the machine defined in `virtual-machines.conf`.
 
 
 >[!NOTE]
