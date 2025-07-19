@@ -11,7 +11,7 @@ create_ssh_keys() {
     ssh-keygen -t rsa -b 4096 -f "$SSH_KEY_PATH" -N ""
 }
 
-delete_ssh_key_from_remote() {              # No funciona de momento
+delete_ssh_key_from_remote() {
     source $SCRIPT_DIR/develop_getMachines > /dev/null
     local name="$1"
     local ip_port="${REMOTE_MACHINES[$name]}"
@@ -56,7 +56,7 @@ setup_ssh_access() {
     local ip="${ip_port%%:*}"
     local port="${ip_port##*:}"
 
-    echo "Verificando acceso SSH a [$name] => [$ip:$port]..."
+    #echo "Verificando acceso SSH a [$name] => [$ip:$port]..."
 
     # Intentar conectar sin contraseña (timeout corto)
     ssh -q -o BatchMode=yes -o ConnectTimeout=5 -p "$port" "$USER@$ip" 'exit' 2>/dev/null
@@ -73,9 +73,7 @@ setup_ssh_access() {
         sudo chmod 600 ~/.ssh/authorized_keys
 EOF
 
-        if [[ $? -eq 0 ]]; then
-            echo "Clave pública copiada correctamente a $name"
-        else
+        if [[ $? -ne 0 ]]; then
             echo "No se pudo copiar la clave pública a $name. ¿Contraseña incorrecta o puerto/IP mal?"
             return 1
         fi
@@ -83,12 +81,8 @@ EOF
 }
 
 check_ssh_keys() {
-    # Comprobar si las claves ya existen
-    if [[ -f "$SSH_KEY_PATH" && -f "$SSH_KEY_PATH.pub" ]]; then
-        echo "Las claves SSH ya existen en $SSH_KEY_PATH"
-    else
+    if [[ ! -f "$SSH_KEY_PATH" || ! -f "$SSH_KEY_PATH.pub" ]]; then
         echo "Claves SSH no encontradas, generando nuevas en $SSH_KEY_PATH"
         create_ssh_keys > /dev/null
     fi
-
 }

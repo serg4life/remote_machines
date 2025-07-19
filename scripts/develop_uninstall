@@ -18,6 +18,7 @@ INSTALL_PATHS=(
     "$SCRIPTS_INSTALLATION_PATH"
     "$SSH_KEY_PATH"
     "$SSH_PUBKEY_PATH"
+    "$SESSIONS_PATH"
 )
 
 # Verificar root

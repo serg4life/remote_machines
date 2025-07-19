@@ -123,7 +123,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         *)
-            TO_OPEN+=("$1")     # Falta implementar claves RSA
+            TO_OPEN+=("$1")
             shift
             ;;
     esac
