@@ -68,7 +68,7 @@ setup_ssh_access() {
         ssh-copy-id -i $SSH_PUBKEY_PATH -p "$port" "$USER@$ip" 2>/dev/null
 
         # Establecer permisos adecuados
-        ssh -p $port "$USER@$ip" <<'EOF'
+        ssh -i $SSH_KEY_PATH -p $port "$USER@$ip" <<'EOF'
         sudo chmod 700 ~/.ssh
         sudo chmod 600 ~/.ssh/authorized_keys
 EOF

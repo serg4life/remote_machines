@@ -12,6 +12,7 @@ help(){
     echo "  -r, --regenerate                     Regenera las claves SSH"
     echo "  -d, --delete-access [machine]        Borra la clave SSH del remoto"
     echo "  -s, --show-remotes                   Devuelve las maquinas remotas"
+    echo "  -u, --uninstall                      Uninstall this software"
     echo ""
 }
 
@@ -36,6 +37,9 @@ check_dependencies() {
     fi
 }
 
+uninstall() {
+    sudo $SCRIPT_DIR/develop_uninstall
+}
 
 showMachines() {
     $SCRIPT_DIR/develop_getMachines
@@ -106,6 +110,11 @@ while [[ $# -gt 0 ]]; do
             ;;
         -s|--show-remotes)
             showMachines
+            shift
+            ;;
+        -u|--uninstall)
+            uninstall
+            exit 0
             shift
             ;;
         -*)
