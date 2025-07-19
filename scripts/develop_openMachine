@@ -14,16 +14,21 @@ if  [[ $# -eq 1 ]]; then
     ip="${ip_port%%:*}"
     port="${ip_port##*:}"
 
-    # Comprobar si existe
-    SESSION="$SESSIONS_PATH/${name}.vnc"
-
     if ! pgrep -f "ssh -i $SSH_KEY_PATH -f -N -p $port $USER@$ip" > /dev/null; then
         echo "Abriendo túnel SSH..."
         ssh -i "$SSH_KEY_PATH" -f -N -p "$port" "$USER@$ip"
     fi
 
 
-    $TOOL $SESSION
+
+    # Comprobar si existe
+    SESSION="$SESSIONS_PATH/${name}.vnc"
+    if [[ -e "$SESSION" ]]; then
+        $TOOL $SESSION
+    else
+        echo "No existe el fichero: $SESSION"
+        exit 1
+    fi
 else
     echo "Argumentos erroneos."
     echo ""
