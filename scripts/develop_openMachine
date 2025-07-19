@@ -17,9 +17,16 @@ if  [[ $# -eq 1 ]]; then
     # Comprobar si existe
     SESSION="./sessions/${name}_session.vnc"
 
+    if pgrep -f "ssh -i $SSH_KEY_PATH -f -N -p $port $USER@$ip" > /dev/null; then
+        echo "Túnel SSH ya está abierto"
+    else
+        echo "Abriendo túnel..."
+        ssh -i $SSH_KEY_PATH -f -N -p $port $USER@$ip
+    fi
+
     # Meter un try para probar varias formas de abrir SSH
-    ssh -i $SSH_KEY_PATH -f -N -p $port $USER@$ip    # Se abre el tunnel en segundo plano (heckear que no cree multiples tuneles)
-    echo "Tunnel SSH abierto"
+    #ssh -i $SSH_KEY_PATH -f -N -p $port $USER@$ip    # Se abre el tunnel en segundo plano (heckear que no cree multiples tuneles)
+    #echo "Tunnel SSH abierto"
 
     $VNC_VIEWER $SESSION            # Verificar que no es bloqueante
 else

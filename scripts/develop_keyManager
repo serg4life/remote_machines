@@ -25,7 +25,7 @@ delete_ssh_key_from_remote() {              # No funciona de momento
     local port="${ip_port##*:}"
     key_content="$(< "$SSH_PUBKEY_PATH")"
 
-    ssh -p $port $USER@$ip <<EOF
+    ssh -i $SSH_KEY_PATH -p $port $USER@$ip <<EOF
 if [[ -f ~/.ssh/authorized_keys ]]; then
     # Hacer backup
     cp ~/.ssh/authorized_keys ~/.ssh/authorized_keys.bak
