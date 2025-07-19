@@ -1,9 +1,11 @@
 #!/bin/bash
 
-source params.conf
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+
+source $SCRIPT_DIR/params.conf
 
 source $USER_CONF_FILE
-source develop_getMachines > /dev/null
+source $SCRIPT_DIR/develop_getMachines > /dev/null
 
 if  [[ $# -eq 1 ]]; then 
     name="$1"

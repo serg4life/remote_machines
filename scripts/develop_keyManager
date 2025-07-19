@@ -1,6 +1,8 @@
 #!/bin/bash
 
-source params.conf
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+
+source $SCRIPT_DIR/params.conf
 
 source $USER_CONF_FILE
 source $MACHINES_CONF_FILE
@@ -10,7 +12,7 @@ create_ssh_keys() {
 }
 
 delete_ssh_key_from_remote() {              # No funciona de momento
-    source develop_getMachines > /dev/null
+    source $SCRIPT_DIR/develop_getMachines > /dev/null
     local name="$1"
     local ip_port="${REMOTE_MACHINES[$name]}"
 
@@ -21,11 +23,23 @@ delete_ssh_key_from_remote() {              # No funciona de momento
 
     local ip="${ip_port%%:*}"
     local port="${ip_port##*:}"
+    key_content="$(< "$SSH_PUBKEY_PATH")"
 
-    ssh -p $port $USER@$ip "grep -vF \"$(< "$SSH_PUBKEY_PATH")\" ~/.ssh/authorized_keys > ~/.ssh/authorized_keys.tmp &&
-    mv ~/.ssh/authorized_keys.tmp ~/.ssh/authorized_keys &&
-    echo 'Clave eliminada'"
+    ssh -p $port $USER@$ip <<EOF
+if [[ -f ~/.ssh/authorized_keys ]]; then
+    # Hacer backup
+    cp ~/.ssh/authorized_keys ~/.ssh/authorized_keys.bak
 
+    # Filtrar línea exacta de la clave
+    grep -vF "$key_content" ~/.ssh/authorized_keys.bak > ~/.ssh/authorized_keys
+
+    # Corregir permisos
+    chmod 600 ~/.ssh/authorized_keys
+    echo "Clave eliminada (si estaba presente)"
+else
+    echo "No existe ~/.ssh/authorized_keys"
+fi
+EOF
 
 }
 

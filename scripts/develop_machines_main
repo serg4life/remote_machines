@@ -1,5 +1,6 @@
 #!/bin/bash
 
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
 help(){
     echo ""
@@ -70,7 +71,6 @@ openMachines() {
     wait
 }
 
-SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
 # Lista de herramientas necesarias
 required_tools=("ssh" "ssh-copy-id" "ssh-keygen" "expect" "vncviewer")
@@ -95,8 +95,8 @@ while [[ $# -gt 0 ]]; do
             ;;
         -d|--delete-access)
             if [[ $# -eq 2 ]]; then
-                #delete_ssh_key_from_remote $2
-                echo "Coming soon..."
+                delete_ssh_key_from_remote $2
+                #echo "Coming soon..."
                 shift 2
             else
                 echo "Faltan argumentos."

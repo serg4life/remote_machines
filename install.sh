@@ -13,6 +13,7 @@ install -Dm644 -o root -g root configs/user-config.conf $USER_CONF_FILE
 install -Dm644 -o root -g root configs/virtual-machines.conf $MACHINES_CONF_FILE
 
 # Copiar carpeta de scripts
+mkdir -p "$SCRIPTS_INSTALLATION_PATH"
 cp -R scripts/* $SCRIPTS_INSTALLATION_PATH/
 
 # Aplicar permisos (644 para archivos, 755 para directorios)
