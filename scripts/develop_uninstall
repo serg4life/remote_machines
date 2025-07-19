@@ -1,6 +1,9 @@
 #!/bin/bash
 
-source params.conf
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+
+source $SCRIPT_DIR/params.conf
+
 HOME="/home/$SUDO_USER"
 
 source $USER_CONF_FILE
@@ -15,6 +18,7 @@ INSTALL_PATHS=(
     "$SCRIPTS_INSTALLATION_PATH"
     "$SSH_KEY_PATH"
     "$SSH_PUBKEY_PATH"
+    "$SESSIONS_PATH"
 )
 
 # Verificar root
@@ -27,6 +31,15 @@ confirm_uninstall
 
 echo ""
 echo "=== Desinstalando $SOFTWARE_NAME ==="
+
+# Eliminar clave SSH de los remotos
+if [[ -f "$SSH_KEY_PATH" && -f "$SSH_KEY_PATH.pub" ]]; then
+    source $SCRIPT_DIR/develop_getMachines > /dev/null
+    source $SCRIPT_DIR/develop_keyManager
+    for name in "${!REMOTE_MACHINES[@]}"; do
+        delete_ssh_key_from_remote $name > /dev/null
+    done
+fi
 
 # Eliminar archivos del sistema
 for path in "${INSTALL_PATHS[@]}"; do

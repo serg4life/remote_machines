@@ -1,9 +1,11 @@
 #!/bin/bash
 
-source params.conf
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+
+source $SCRIPT_DIR/params.conf
 
 source $USER_CONF_FILE
-source develop_getMachines > /dev/null
+source $SCRIPT_DIR/develop_getMachines > /dev/null
 
 if  [[ $# -eq 1 ]]; then 
     name="$1"
@@ -12,14 +14,21 @@ if  [[ $# -eq 1 ]]; then
     ip="${ip_port%%:*}"
     port="${ip_port##*:}"
 
+    if ! pgrep -f "ssh -i $SSH_KEY_PATH -f -N -p $port $USER@$ip" > /dev/null; then
+        echo "Abriendo túnel SSH..."
+        ssh -i "$SSH_KEY_PATH" -f -N -p "$port" "$USER@$ip"
+    fi
+
+
+
     # Comprobar si existe
-    SESSION="./sessions/${name}_session.vnc"
-
-    # Meter un try para probar varias formas de abrir SSH
-    ssh -f -N -p $port $USER@$ip    # Se abre el tunnel en segundo plano (heckear que no cree multiples tuneles)
-    echo "Tunnel SSH abierto"
-
-    $VNC_VIEWER $SESSION            # Verificar que no es bloqueante
+    SESSION="$SESSIONS_PATH/${name}.vnc"
+    if [[ -e "$SESSION" ]]; then
+        $TOOL $SESSION
+    else
+        echo "No existe el fichero: $SESSION"
+        exit 1
+    fi
 else
     echo "Argumentos erroneos."
     echo ""
