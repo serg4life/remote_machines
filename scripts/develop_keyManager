@@ -25,7 +25,7 @@ delete_ssh_key_from_remote() {
     local port="${ip_port##*:}"
     key_content="$(< "$SSH_PUBKEY_PATH")"
 
-    ssh -i $SSH_KEY_PATH -p $port $USER@$ip <<EOF
+    ssh -i "$SSH_KEY_PATH" $USER@$ip <<EOF
 if [[ -f ~/.ssh/authorized_keys ]]; then
     # Hacer backup
     cp ~/.ssh/authorized_keys ~/.ssh/authorized_keys.bak
@@ -65,13 +65,7 @@ setup_ssh_access() {
         echo "Acceso no configurado para [$name], copiando clave pública..."
 
         # Intenta copiar clave pública
-        ssh-copy-id -i $SSH_PUBKEY_PATH -p "$port" "$USER@$ip" 2>/dev/null
-
-        # Establecer permisos adecuados
-        ssh -i $SSH_KEY_PATH -p $port "$USER@$ip" <<'EOF'
-        sudo chmod 700 ~/.ssh
-        sudo chmod 600 ~/.ssh/authorized_keys
-EOF
+        ssh-copy-id -i $SSH_PUBKEY_PATH "$USER@$ip" 2>/dev/null
 
         if [[ $? -ne 0 ]]; then
             echo "No se pudo copiar la clave pública a $name. ¿Contraseña incorrecta o puerto/IP mal?"
