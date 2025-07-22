@@ -71,12 +71,6 @@ setup_ssh_access() {
             echo "No se pudo copiar la clave pública a $name. ¿Contraseña incorrecta o puerto/IP mal?"
             return 1
         fi
-
-#         # Establecer permisos adecuados
-#         ssh -i $SSH_KEY_PATH -P "$port" "$USER@$ip" <<'EOF'
-#         sudo chmod 700 ~/.ssh
-#         sudo chmod 600 ~/.ssh/authorized_keys
-# EOF
     fi
 }
 
